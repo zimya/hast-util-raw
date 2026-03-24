@@ -1017,6 +1017,99 @@ test('raw', async function (t) {
       })
     })
   })
+
+  await t.test(
+    'should not foster-parent whitespace text nodes in tables',
+    async function () {
+      // This equals to HTML:
+      // <table>
+      //   <tbody>
+      //     <tr>
+      //       <td>A</td>
+      //     </tr>
+      //   </tbody>
+      // </table>
+      assert.deepEqual(
+        raw({
+          type: 'root',
+          children: [
+            {
+              type: 'element',
+              tagName: 'table',
+              properties: {},
+              children: [
+                {type: 'text', value: '\n  '},
+                {
+                  type: 'element',
+                  tagName: 'tbody',
+                  properties: {},
+                  children: [
+                    {type: 'text', value: '\n    '},
+                    {
+                      type: 'element',
+                      tagName: 'tr',
+                      properties: {},
+                      children: [
+                        {type: 'text', value: '\n      '},
+                        {
+                          type: 'element',
+                          tagName: 'td',
+                          properties: {},
+                          children: [{type: 'text', value: 'A'}]
+                        },
+                        {type: 'text', value: '\n    '}
+                      ]
+                    },
+                    {type: 'text', value: '\n  '}
+                  ]
+                },
+                {type: 'text', value: '\n'}
+              ]
+            }
+          ]
+        }),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [
+            {
+              type: 'element',
+              tagName: 'table',
+              properties: {},
+              children: [
+                {type: 'text', value: '\n  '},
+                {
+                  type: 'element',
+                  tagName: 'tbody',
+                  properties: {},
+                  children: [
+                    {type: 'text', value: '\n    '},
+                    {
+                      type: 'element',
+                      tagName: 'tr',
+                      properties: {},
+                      children: [
+                        {type: 'text', value: '\n      '},
+                        {
+                          type: 'element',
+                          tagName: 'td',
+                          properties: {},
+                          children: [{type: 'text', value: 'A'}]
+                        },
+                        {type: 'text', value: '\n    '}
+                      ]
+                    },
+                    {type: 'text', value: '\n  '}
+                  ]
+                },
+                {type: 'text', value: '\n'}
+              ]
+            }
+          ]
+        }
+      )
+    }
+  )
 })
 
 test('integration', async function (t) {
